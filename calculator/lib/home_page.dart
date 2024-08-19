@@ -9,6 +9,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String displayValue = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,25 +30,96 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 10,
             ),
-            const Text("2500",
-                style: TextStyle(
+            Text(displayValue,
+                style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 35,
+                    fontSize: 50,
                     fontWeight: FontWeight.bold)),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      color: Color.fromRGBO(37, 33, 135, 1),
-                    )
+                    calculatorButton(buttonName: "MC"),
+                    calculatorButton(buttonName: "C"),
+                    calculatorButton(buttonName: "7"),
+                    calculatorButton(buttonName: "4"),
+                    calculatorButton(buttonName: "1"),
+                    calculatorButton(buttonName: "%")
+                  ],
+                ),
+                Column(
+                  children: [
+                    calculatorButton(buttonName: "M+"),
+                    calculatorButton(buttonName: "X"),
+                    calculatorButton(buttonName: "8"),
+                    calculatorButton(buttonName: "5"),
+                    calculatorButton(buttonName: "2"),
+                    calculatorButton(buttonName: "0")
+                  ],
+                ),
+                Column(
+                  children: [
+                    calculatorButton(buttonName: "M-"),
+                    calculatorButton(buttonName: "/", isOperatorButton: true),
+                    calculatorButton(buttonName: "9"),
+                    calculatorButton(buttonName: "6"),
+                    calculatorButton(buttonName: "3"),
+                    calculatorButton(buttonName: ",")
+                  ],
+                ),
+                Column(
+                  children: [
+                    calculatorButton(buttonName: "MR"),
+                    calculatorButton(buttonName: "*", isOperatorButton: true),
+                    calculatorButton(buttonName: "-", isOperatorButton: true),
+                    calculatorButton(buttonName: "+", isOperatorButton: true),
+                    calculatorButton(
+                        buttonName: "=",
+                        isEqualButon: true,
+                        isOperatorButton: true)
                   ],
                 )
               ],
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Padding calculatorButton(
+      {required String buttonName,
+      bool isEqualButon = false,
+      bool isOperatorButton = false}) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            if (isOperatorButton) {
+            } else {
+              if (buttonName == "C") {
+                displayValue = "";
+              } else {
+                displayValue = displayValue + buttonName;
+              }
+            }
+          });
+        },
+        child: Container(
+          width: 80,
+          height: isEqualButon == true ? 128 : 60,
+          decoration: BoxDecoration(
+              color: isOperatorButton
+                  ? const Color.fromRGBO(255, 59, 59, 1)
+                  : const Color.fromARGB(255, 255, 225, 32),
+              borderRadius: BorderRadius.circular(5)),
+          child: Center(
+              child: Text(
+            buttonName,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          )),
         ),
       ),
     );
