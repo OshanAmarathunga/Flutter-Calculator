@@ -10,6 +10,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String displayValue = "";
+  String calculationValue = "";
+  bool isReplace = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +25,8 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 150,
             ),
-            const Text(
-              "125*20",
+            Text(
+              calculationValue,
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             const SizedBox(
@@ -65,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                     calculatorButton(buttonName: "9"),
                     calculatorButton(buttonName: "6"),
                     calculatorButton(buttonName: "3"),
-                    calculatorButton(buttonName: ",")
+                    calculatorButton(buttonName: ".")
                   ],
                 ),
                 Column(
@@ -88,6 +90,82 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void checkLogic({required String buttonName}) {
+    setState(() {
+      if (buttonName == "C") {
+        setState(() {
+          displayValue = "";
+          calculationValue = "";
+          isReplace = false;
+        });
+      } else if (buttonName == "X") {
+        displayValue = displayValue.substring(0, displayValue.length - 1);
+      } else if (buttonName == "=") {
+        if (calculationValue.endsWith("+") ||
+            calculationValue.endsWith("-") ||
+            calculationValue.endsWith("*") ||
+            calculationValue.endsWith("/")) {
+          double firstValue = double.parse(
+              calculationValue.substring(0, calculationValue.length - 1));
+          double secondValue = double.parse(displayValue);
+
+          String operatorValue = calculationValue[calculationValue.length - 1];
+          num? result;
+          if (operatorValue == "+") {
+            calculationValue = "$firstValue $operatorValue $secondValue =";
+            result = firstValue + secondValue;
+            displayValue = result.toString();
+          } else if (operatorValue == "-") {
+            calculationValue = "$firstValue $operatorValue $secondValue =";
+            result = firstValue - secondValue;
+            displayValue = result.toString();
+          } else if (operatorValue == "*") {
+            calculationValue = "$firstValue $operatorValue $secondValue =";
+            result = firstValue * secondValue;
+            displayValue = result.toString();
+          } else if (operatorValue == "/") {
+            calculationValue = "$firstValue $operatorValue $secondValue =";
+            result = firstValue / secondValue;
+            displayValue = result.toString();
+          }
+          isReplace = false;
+        }
+      } else if (buttonName == "*" ||
+          buttonName == "/" ||
+          buttonName == "-" ||
+          buttonName == "+") {
+        setState(() {
+          if (displayValue.isNotEmpty && calculationValue.isEmpty) {
+            calculationValue = displayValue + buttonName;
+          }
+        });
+      } else if (int.tryParse(buttonName) != null) {
+        String? lastCharactorOfCalculation;
+        if (calculationValue.isNotEmpty) {
+          lastCharactorOfCalculation =
+              calculationValue[calculationValue.length - 1];
+          if (lastCharactorOfCalculation == "+" ||
+              lastCharactorOfCalculation == "-" ||
+              lastCharactorOfCalculation == "/" ||
+              lastCharactorOfCalculation == "*") {
+            if (isReplace) {
+              displayValue = displayValue + buttonName;
+            } else {
+              displayValue = buttonName;
+              isReplace = true;
+            }
+          } else if (calculationValue.endsWith("=")) {
+            calculationValue = "";
+            displayValue = buttonName;
+            isReplace = false;
+          }
+        } else {
+          displayValue = displayValue + buttonName;
+        }
+      }
+    });
+  }
+
   Padding calculatorButton(
       {required String buttonName,
       bool isEqualButon = false,
@@ -96,16 +174,7 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(4),
       child: InkWell(
         onTap: () {
-          setState(() {
-            if (isOperatorButton) {
-            } else {
-              if (buttonName == "C") {
-                displayValue = "";
-              } else {
-                displayValue = displayValue + buttonName;
-              }
-            }
-          });
+          checkLogic(buttonName: buttonName);
         },
         child: Container(
           width: 80,
